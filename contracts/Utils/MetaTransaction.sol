@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {IMetaTransaction} from "../Interface/IMetaTransaction.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -8,25 +9,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 /// @author @anggadanarp
 /// @notice Enables gasless transaction execution by verifying signed function calls on behalf of users.
 /// @dev Provides per-user nonce tracking, signature verification, and relayer control via owner.
-abstract contract MetaTransaction is EIP712 {
-    // ================================================================================
-    //                                    ERRORS
-    // ================================================================================
-
-    /// @notice Thrown when a signer is not authorized for the attempted operation.
-    /// @param signer The unauthorized address.
-    error Unauthorized(address signer);
-
-    /// @notice Thrown when the provided nonce does not match the expected nonce.
-    error InvalidNonce();
-
-    /// @notice Thrown when the signature does not match the given sender address.
-    error InvalidSignature();
-
-    /// @notice Thrown when a low-level call fails during function execution.
-    /// @param data The revert reason returned by the called function.
-    error MetaTransactionFailed(string data);
-
+abstract contract MetaTransaction is EIP712, IMetaTransaction {
     // ================================================================================
     //                                    STORAGE
     // ================================================================================
@@ -39,26 +22,6 @@ abstract contract MetaTransaction is EIP712 {
 
     /// @notice Stores addresses authorized to relay meta-transactions.
     mapping(address => bool) private _relayer;
-
-    // ================================================================================
-    //                                    STRUCTS
-    // ================================================================================
-
-    /// @notice Represents a signed meta-transaction request.
-    struct Transaction {
-        address from;
-        uint256 nonce;
-        bytes functionCall;
-    }
-
-    // ================================================================================
-    //                                    EVENTS
-    // ================================================================================
-
-    /// @notice Emitted when a meta-transaction is successfully executed.
-    /// @param user The address who signed and initiated the request.
-    /// @param functionCall The raw encoded function call executed.
-    event MetaTransactionExecuted(address indexed user, bytes functionCall);
 
     // ================================================================================
     //                                  CONSTRUCTOR
