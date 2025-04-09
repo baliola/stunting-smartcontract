@@ -50,12 +50,14 @@ interface IMetaTransaction {
 
     /// @notice Allows a whitelisted relayer to execute a user-signed function on a target contract.
     /// @dev Implementation must handle signature verification and nonce checking internally.
-    /// @param target The contract address where the function call will be executed.
-    /// @param value Amount of native token (ETH) to send along with the call.
-    /// @param data ABI-encoded function call (including selector and arguments).
+    /// @param from Signer of the meta-transaction. 
+    /// @param nonce Replay-protecting nonce.
+    /// @param functionCall ABI-encoded function call (including selector and arguments).
+    /// @param signature The user's signature over the typed meta-transaction.
     function executeMetaTransaction(
-        address target,
-        uint256 value,
-        bytes calldata data
+        address from,
+        uint256 nonce,
+        bytes calldata functionCall,
+        bytes calldata signature
     ) external;
 }

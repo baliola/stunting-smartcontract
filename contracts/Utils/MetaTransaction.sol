@@ -14,8 +14,8 @@ abstract contract MetaTransaction is EIP712, IMetaTransaction {
     //                                    STORAGE
     // ================================================================================
 
-    /// @notice The contract owner address (immutable).
-    address private immutable _OWNER;
+    /// @notice The contract owner address.
+    address private _OWNER;
 
     /// @notice Tracks per-user nonce to protect against replay attacks.
     mapping(address => uint256) private _nonces;
