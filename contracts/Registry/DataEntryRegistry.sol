@@ -10,7 +10,7 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 /// @author @anggadanarp
 /// @notice Abstract contract to handle metadata hash submission by authorized users (e.g., Posyandu/Puskesmas).
 /// @dev Inherits from RBACRegistry and verifies role access, uniqueness of data, and ECDSA signatures.
-abstract contract DataRegistryRegistry is IDataEntry, IRBAC {
+abstract contract DataEntryRegistry is IDataEntry {
     using ECDSA for bytes32;
     IRBAC public rbac;
 
@@ -48,8 +48,8 @@ abstract contract DataRegistryRegistry is IDataEntry, IRBAC {
 
         address signer = _recoverSigner(metadataHash, signature);
 
-        if (!rbac.checkAccessLog(signer, DATA_ENTRY_ROLE)) revert Unauthorized(signer);
-        if (signer != msg.sender) revert InvalidSignature(signer, msg.sender);
+        if (!rbac.checkAccessLog(signer, DATA_ENTRY_ROLE)) revert DataEntryUnauthorized(signer);
+        if (signer != msg.sender) revert DataEntryInvalidSignature(signer, msg.sender);
 
         _submittedData[metadataHash] = DataEntry({
             submitter: signer,

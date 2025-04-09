@@ -17,11 +17,11 @@ interface IDataEntry {
     /// @notice Thrown when the recovered signer does not match the transaction sender.
     /// @param expected The recovered signer address from the signature.
     /// @param actual The actual msg.sender address of the transaction.
-    error InvalidSignature(address expected, address actual);
+    error DataEntryInvalidSignature(address expected, address actual);
 
     /// @notice Thrown when the signer does not have the required role to submit data.
     /// @param signer The address attempting to submit the data.
-    error Unauthorized(address signer);
+    error DataEntryUnauthorized(address signer);
 
     // ================================================================================
     //                                     EVENTS

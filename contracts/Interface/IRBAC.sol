@@ -18,14 +18,6 @@ interface IRBAC {
     /// @param role The role identifier that is not yet registered.
     error RoleNotRegistered(bytes32 role);
 
-    /// @notice Thrown when attempting to suspend a user that is already suspended.
-    /// @param user The address of the user already suspended.
-    error AlreadySuspended(address user);
-
-    /// @notice Thrown when attempting to unsuspend a user that is not currently suspended.
-    /// @param user The address of the user not suspended.
-    error UserNotSuspended(address user);
-
     // ================================================================================
     //                                     EVENTS
     // ================================================================================
@@ -55,22 +47,13 @@ interface IRBAC {
         bool granted
     );
 
-    /// @notice Emitted when a user is suspended from performing any role-based action.
-    /// @param user The address that has been suspended.
-    event UserSuspended(address indexed user);
-
-    /// @notice Emitted when a user is reactivated and allowed to perform actions again.
-    /// @param user The address that has been unsuspended.
-    event UserUnsuspended(address indexed user);
-
     // ================================================================================
     //                             EXTERNAL ROLE FUNCTIONS
     // ================================================================================
 
     /// @notice Registers a new role and assigns an admin role to manage it.
     /// @param role The identifier of the new role to register.
-    /// @param adminRole The role that will have permission to manage the new role.
-    function registerRole(bytes32 role, bytes32 adminRole) external;
+    function registerRole(bytes32 role) external;
 
     /// @notice Assigns a role to a specific user address.
     /// @param user The address receiving the role.
@@ -94,20 +77,6 @@ interface IRBAC {
     // ================================================================================
     //                             EXTERNAL SUSPENSION FUNCTIONS
     // ================================================================================
-
-    /// @notice Suspends a user from performing any role-based actions.
-    /// @param user The address to suspend.
-    function suspendUser(address user) external;
-
-    /// @notice Reactivates a suspended user.
-    /// @param user The address to unsuspend.
-    function unsuspendUser(address user) external;
-
-    /// @notice Returns whether a user is currently suspended.
-    /// @param user The address to check.
-    /// @return True if the user is suspended, false otherwise.
-    function getIsSuspended(address user) external view returns (bool);
-
     /// @notice Returns whether a role is registered in the system.
     /// @param role The role identifier to check.
     /// @return True if the role is registered, false otherwise.

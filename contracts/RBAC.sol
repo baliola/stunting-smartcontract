@@ -23,7 +23,7 @@ contract RBAC is RBACRegistry, MetaTransaction {
         string memory _version
     ) EIP712(_name, _version) MetaTransaction(msg.sender) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _registerRole(ADMIN_ROLE, ADMIN_ROLE);
+        _registerRole(ADMIN_ROLE);
         _grantRole(ADMIN_ROLE, initialAdmin);
     }
 
@@ -33,9 +33,8 @@ contract RBAC is RBACRegistry, MetaTransaction {
 
     /// @notice Registers a new role and its admin role.
     /// @param role The role identifier to register.
-    /// @param adminRole The admin role that will manage this role.
-    function registerRole(bytes32 role, bytes32 adminRole) external {
-        _registerRole(role, adminRole);
+    function registerRole(bytes32 role) external {
+        _registerRole(role);
     }
 
     /// @notice Assigns a registered role to a specific user.
@@ -65,29 +64,6 @@ contract RBAC is RBACRegistry, MetaTransaction {
         bytes32 role
     ) external returns (bool granted) {
         return _checkAccessLog(user, role);
-    }
-
-    // ================================================================================
-    //                            SUSPENSION MANAGEMENT
-    // ================================================================================
-
-    /// @notice Suspends a user from using any assigned role.
-    /// @param user The address to suspend.
-    function suspendUser(address user) external {
-        _suspendUser(user);
-    }
-
-    /// @notice Unsuspends a previously suspended user.
-    /// @param user The address to unsuspend.
-    function unsuspendUser(address user) external {
-        _unsuspendUser(user);
-    }
-
-    /// @notice Returns whether a user is currently suspended.
-    /// @param user The address to check.
-    /// @return True if the user is suspended, false otherwise.
-    function getIsSuspended(address user) external view returns (bool) {
-        return _getIsSuspended(user);
     }
 
     // ================================================================================

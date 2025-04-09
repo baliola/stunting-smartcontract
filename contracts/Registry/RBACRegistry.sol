@@ -16,9 +16,6 @@ abstract contract RBACRegistry is IRBAC, AccessControl {
     /// @notice Default administrator role identifier.
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    /// @dev Tracks suspension status of users.
-    mapping(address => bool) private _isSuspended;
-
     /// @dev Tracks which roles have been registered for use in the system.
     mapping(bytes32 => bool) private _registeredRoles;
 
@@ -28,14 +25,11 @@ abstract contract RBACRegistry is IRBAC, AccessControl {
     /// @notice Registers a new role with a specified admin role.
     /// @dev The adminRole will control future assignments and revocations of this role.
     /// @param role Role identifier (usually a keccak256 hash of a string).
-    /// @param adminRole Role that will have admin permissions over the new role.
     function _registerRole(
-        bytes32 role,
-        bytes32 adminRole
-    ) internal onlyRole(ADMIN_ROLE) {
+        bytes32 role
+    ) internal onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_registeredRoles[role]) revert RoleAlreadyRegistered(role);
         _registeredRoles[role] = true;
-        _setRoleAdmin(role, adminRole);
         emit RoleRegistered(role, msg.sender);
     }
 
@@ -73,7 +67,7 @@ abstract contract RBACRegistry is IRBAC, AccessControl {
         address user,
         bytes32 role
     ) internal view returns (bool) {
-        return hasRole(role, user) && !_isSuspended[user];
+        return _getIsRoleRegistered(role) && hasRole(role, user);
     }
 
     /// @notice Performs access check and emits a log for auditing.
@@ -89,34 +83,8 @@ abstract contract RBACRegistry is IRBAC, AccessControl {
     }
 
     // ================================================================================
-    //                                 SUSPENSION MANAGEMENT
-    // ================================================================================
-    /// @notice Suspends a user, preventing them from accessing roles.
-    /// @param user Address to suspend.
-    function _suspendUser(address user) internal onlyRole(ADMIN_ROLE) {
-        if (_isSuspended[user]) revert AlreadySuspended(user);
-        _isSuspended[user] = true;
-        emit UserSuspended(user);
-    }
-
-    /// @notice Re-enables a suspended user.
-    /// @param user Address to unsuspend.
-    function _unsuspendUser(address user) internal onlyRole(ADMIN_ROLE) {
-        if (!_isSuspended[user]) revert UserNotSuspended(user);
-        _isSuspended[user] = false;
-        emit UserUnsuspended(user);
-    }
-
-    // ================================================================================
     //                                 INTERNAL VIEWS
     // ================================================================================
-    /// @notice Internal getter for suspension status (for use in child contracts).
-    /// @param user Address to check.
-    /// @return True if the user is suspended.
-    function _getIsSuspended(address user) internal view returns (bool) {
-        return _isSuspended[user];
-    }
-
     /// @notice Internal getter to check if a role has been registered.
     /// @param role Role identifier to check.
     /// @return True if the role is registered.
