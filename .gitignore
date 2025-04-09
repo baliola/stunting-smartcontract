@@ -1,3 +1,7 @@
+.vscode
+.wake
+.yarn
+
 node_modules
 .env
 coverage
